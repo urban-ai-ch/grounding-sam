@@ -1,0 +1,23 @@
+# Configuration for Cog ⚙️
+# Reference: https://cog.run/yaml
+
+build:
+  # set to true if your model requires a GPU
+  gpu: false
+
+  # python version in the form '3.11' or '3.11.4'
+  python_version: "3.11"
+
+  # a list of packages in the format <package-name>==<version>
+  python_packages:
+    - torch==2.5.1
+    - transformers==4.47.0
+    - pillow==11.0.0
+    - numpy==2.2.0
+    - requests==2.32.3
+    - cog==0.13.6
+    - dataclasses==0.6
+    - typing-extensions==4.12.2
+
+# predict.py defines how predictions are run on your model
+predict: "predict.py:Predictor"
