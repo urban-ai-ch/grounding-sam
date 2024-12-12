@@ -75,11 +75,8 @@ class Predictor(BasePredictor):
         masks = self.segment(image, detections)
 
         image_tensor = torch.from_numpy(np.array(image)).permute(2, 0, 1).to(self.device)
-
-        result = torch.zeros_like(image_tensor).to(self.device)
         result = torch.any(masks.to(self.device), dim=0)
         
-        ## Apply the mask
         masked_image = image_tensor * result.float()
         masked_image_np = masked_image.cpu().numpy().transpose(1, 2, 0)
         masked_image_np = np.clip(masked_image_np, 0, 255).astype(np.uint8)
