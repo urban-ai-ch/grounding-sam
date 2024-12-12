@@ -76,7 +76,6 @@ class Predictor(BasePredictor):
 
         image_tensor = torch.from_numpy(np.array(image)).permute(2, 0, 1).to(self.device)
 
-        result = torch.zeros_like(image_tensor).to(self.device)
         result = torch.any(masks.to(self.device), dim=0)
         
         ## Apply the mask
