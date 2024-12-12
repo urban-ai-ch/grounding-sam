@@ -6,7 +6,7 @@ from typing import Any, Dict, List
 from cog import BasePredictor, Path
 import numpy as np
 import requests
-from torch import cuda, Tensor, from_numpy, zeros_like
+import torch
 from transformers import AutoModelForMaskGeneration, AutoProcessor, pipeline
 from PIL import Image
 
@@ -46,7 +46,7 @@ class Predictor(BasePredictor):
         self,
         image: Image.Image,
         detections: List[Dict[str, Any]], # output of grounding dino  
-    ) -> Tensor:
+    ) -> torch.Tensor:
         
         print(detections)
 
@@ -74,16 +74,14 @@ class Predictor(BasePredictor):
         detections = self.detect(image, labels, threshold)
         masks = self.segment(image, detections)
 
-        image_tensor = from_numpy(np.array(image)).permute(2, 0, 1)
+        image_tensor = torch.from_numpy(np.array(image)).permute(2, 0, 1).to(self.device)
 
-        num_images = masks.shape[0]
-        result = zeros_like(image_tensor) # OR of all the masks
-        for i in range(num_images):
-            result = result | masks[i]
+        result = torch.zeros_like(image_tensor).to(self.device)
+        result = torch.any(masks.to(self.device), dim=0)
         
         ## Apply the mask
         masked_image = image_tensor * result.float()
-        masked_image_np = masked_image.numpy().transpose(1, 2, 0)
+        masked_image_np = masked_image.cpu().numpy().transpose(1, 2, 0)
         masked_image_np = np.clip(masked_image_np, 0, 255).astype(np.uint8)
 
         return masked_image_np
