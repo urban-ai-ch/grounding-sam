@@ -13,7 +13,7 @@ from PIL import Image
 
 class Predictor(BasePredictor):
 
-    device = "cuda" if cuda.is_available() else "cpu"
+    device = "cuda"
     detector_id = "IDEA-Research/grounding-dino-tiny"
     segmenter_id = "facebook/sam-vit-base"
 
